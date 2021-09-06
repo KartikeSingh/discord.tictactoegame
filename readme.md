@@ -11,7 +11,7 @@ This package is very easy to use and you can request new updates and stuff simpl
 
 # How?
 ```js
-const ttt = require('discord.tictactoe');
+const ttt = require('discord.tictactoegame');
 
 /**
  * This method will start a Solo game between The message author and bot, everyhting is automatic <3
