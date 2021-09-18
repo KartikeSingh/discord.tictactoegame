@@ -9,7 +9,7 @@ class TicTacToe {
      * @param {Discord.Client} bot The discord client
      */
     async solo(message, bot) {
-        let botName = bot.user.username || "Bot";
+        let botName = bot?.user?.username || "Bot";
         if (!message || !message.author) return new Error("No message was provided")
         let options = [1, 2, 3, 4, 5, 6, 7, 8, 9], user = [], botc = [];
         const row = await getComponents(options);
