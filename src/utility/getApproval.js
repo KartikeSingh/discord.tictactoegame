@@ -17,10 +17,10 @@ async function getApproval(player, message) {
             collector.on('end', (f, r) => {
                 let move = true;
                 if (r === "time" || r === "2") move = false;
-                msg.delete()
+
                 if (r === "time") {
                     message.channel.send({ embeds: [{ color: "RED", title: `${player.username} was too lazy to reply, so game is ended` }] });
-                    f.first().reply({ embeds: [{ color: "RED", title: "You took too long to respond" }] });
+                    msg.reply({ embeds: [{ color: "RED", title: "You took too long to respond" }] });
                 } else if (r === "2") {
                     message.channel.send({ embeds: [{ color: "RED", title: `${player.username} declined to join the game` }] });
                     f.first().reply({ embeds: [{ color: "GREEN", title: "Successfully denied game invitation" }] });
@@ -28,6 +28,8 @@ async function getApproval(player, message) {
                     message.channel.send({ embeds: [{ color: "GREEN", title: `${player.username} Accepted the game invitation` }] });
                     f.first().reply({ embeds: [{ color: "GREEN", title: "Successfully accepted game invitation" }] });
                 }
+
+                msg.delete()
 
                 res(move);
             })
