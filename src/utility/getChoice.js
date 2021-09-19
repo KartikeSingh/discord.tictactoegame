@@ -13,7 +13,8 @@ const getEmoji = require('./getEmoji');
 function getChoice(user, channel, options, player1, bot) {
     return new Promise(async (res, rej) => {
         try {
-            channel.send({ content: `${user.toString()}, Choose your next move from the buttons` })
+            let _msg_ = await channel.send({ content: `${user.toString()}, Choose your next move from the buttons` });
+            setTimeout(() => _msg_.delete().catch(e => { }), this.autoDelete);
 
             const collector = channel.createMessageComponentCollector({ filter: (i) => i.user.id === user.id && (i.customId.endsWith("_tic_tac_toe")), time: 30000 });
 
@@ -30,8 +31,14 @@ function getChoice(user, channel, options, player1, bot) {
                     options = options.filter(v => v !== c);
                 }
 
-                if (bot) await interaction.reply({ ephemeral: true, content: "You chose" + getEmoji(userChoice) + "\nAnd I chose : " + getEmoji(bot[bot.length - 1]) });
-                else await interaction.reply({ ephemeral: false, content: `${user.username} chose ${getEmoji(userChoice)}` });
+                let _msg;
+
+                if (bot) _msg = await interaction.reply({ ephemeral: true, content: "You chose" + getEmoji(userChoice) + "\nAnd I chose : " + getEmoji(bot[bot.length - 1]) });
+                else _msg = await interaction.reply({ ephemeral: false, content: `${user.username} chose ${getEmoji(userChoice)}` });
+
+                setTimeout(() => {
+                    interaction.channel.messages.delete(_msg).catch(e => { });
+                }, this.autoDelete)
 
                 collector.stop(userChoice);
             });

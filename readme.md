@@ -11,7 +11,8 @@ This package is very easy to use and you can request new updates and stuff simpl
 
 # How?
 ```js
-const ttt = require('discord.tictactoegame');
+const _ttt = require('discord.tictactoegame');
+const ttt = new _ttt();
 
 /**
  * This method will start a Solo game between The message author and bot, everyhting is automatic <3
@@ -26,6 +27,39 @@ ttt.solo(message,bot);
  * @param {Discord.User} player2 The mentioned User / second player. Note it should be a discord user Object not guild member object
  */
 ttt.duo(message,player2);
+```
+
+# Advanced (Custom Messages)
+```js
+const _ttt = require('discord.tictactoegame');
+const ttt = new _ttt({
+    drawEndDescription: "HAHA Game ended with a draw, I am sure both player are nerds.",
+    drawEndTitle: "GAME ENDED WITH A DRAW 🦕",
+    endDescription: "**{winner}** is the winner and a nerd i.e. **{looser}** is the looser",
+    endTitle: "Game ended with a victori",
+    forceEndDescription: "Game ended forcfully by {user}",
+    forceEndTitle: "A nerd ran away :(",
+    requestTitle: "You have been request to join Tic Tac Toe GAME!",
+    startTitle: "GAMEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+    timeEndDescription: "{user} is toooo sloww mannn",
+    timeEndTitle: "TIMEOUTTTT !",
+    autoDelete: 1600,
+});
+
+/**
+  * TThe parameters of options
+  * @param {Number} autoDelete Time after which auto delete useless bot messages.
+  * @param {String} startTitle The game starting title.
+  * @param {String} requestTitle The title for request message in user DM.
+  * @param {String} forceEndTitle The title when game is ended forcefully
+  * @param {String} forceEndDescription The description when game is ended forcefully
+  * @param {String} timeEndTitle The title when user failed in choosing their move.
+  * @param {String} timeEndDescription The description when user failed in choosing their move.
+  * @param {String} drawEndTitle The title when game ended with a draw.
+  * @param {String} drawEndDescription The description when game ended with a draw.
+  * @param {String} endTitle The title when game ended normally.
+  * @param {String} endDescription The description when game ended normally.
+*/
 ```
 
 # Example Images
