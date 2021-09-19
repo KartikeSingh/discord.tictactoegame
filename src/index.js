@@ -71,6 +71,7 @@ class TicTacToe {
 
     async duo(message, player2) {
         if (!message || !message.author) return new Error("No message was provided");
+        if(!player2 || !player2.username) return new Error("No Player 2 was provided");
 
         if (await getApproval(player2, message) === false) return;
 
