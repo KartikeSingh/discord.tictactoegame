@@ -14,6 +14,7 @@ async function getApproval(player, message) {
             let collector = channel.createMessageComponentCollector({ filter: (i) => i.user.id === player.id && i.message.id === msg.id && i.customId.endsWith("_tic_tac_toe_choose"), time: 30000 })
 
             collector.on('collect', (i) => { collector.stop(i.customId[0]) });
+
             collector.on('end', (f, r) => {
                 let move = true;
                 if (r === "time" || r === "2") move = false;
@@ -24,12 +25,12 @@ async function getApproval(player, message) {
                 } else if (r === "2") {
                     message.channel.send({ embeds: [{ color: "RED", title: `${player.username} declined to join the game` }] });
                     f.first().reply({ embeds: [{ color: "GREEN", title: "Successfully denied game invitation" }] });
+                    msg.delete()
                 } else if (r === "1") {
+                    msg.delete()
                     message.channel.send({ embeds: [{ color: "GREEN", title: `${player.username} Accepted the game invitation` }] });
                     f.first().reply({ embeds: [{ color: "GREEN", title: "Successfully accepted game invitation" }] });
                 }
-
-                msg.delete()
 
                 res(move);
             })
