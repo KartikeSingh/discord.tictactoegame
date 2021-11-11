@@ -35,7 +35,7 @@ const ttt = require('discord.tictactoegame');
 const tttInstance = new ttt({
     drawEndDescription: "HAHA Game ended with a draw, I am sure both player are nerds.",
     drawEndTitle: "GAME ENDED WITH A DRAW 🦕",
-    endDescription: "**{winner}** is the winner and a nerd i.e. **{looser}** is the looser",
+    endDescription: "**{winner}** is the winner and a nerd i.e. **{loser}** is the loser",
     endTitle: "Game ended with a victori",
     forceEndDescription: "Game ended forcfully by {user}",
     forceEndTitle: "A nerd ran away :(",
