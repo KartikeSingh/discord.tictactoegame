@@ -14,7 +14,7 @@ function getChoice(user, channel, options, player1, bot) {
     return new Promise(async (res, rej) => {
         try {
             let _msg_ = await channel.send({ content: `${user.toString()}, Choose your next move from the buttons` });
-            setTimeout(() => _msg_.delete().catch(e => { }), this.autoDelete);
+            setTimeout(() => _msg_.delete().catch(() => { }), this.autoDelete);
 
             const collector = channel.createMessageComponentCollector({ filter: (i) => i.user.id === user.id && (i.customId.endsWith("_tic_tac_toe")), time: 30000 });
 
@@ -37,7 +37,7 @@ function getChoice(user, channel, options, player1, bot) {
                 else _msg = await interaction.reply({ ephemeral: false, content: `${user.username} chose ${getEmoji(userChoice)}` });
 
                 setTimeout(() => {
-                    interaction.channel.messages.delete(_msg).catch(e => { });
+                    interaction.channel.messages.delete(_msg).catch(() => { });
                 }, this.autoDelete)
 
                 collector.stop(userChoice);
@@ -46,7 +46,7 @@ function getChoice(user, channel, options, player1, bot) {
             collector.once('end', async (f, r) => {
                 if (r === "time") res({ reason: "time", user: user.username });
                 else if (r === "cancel") res({ reason: "cancel", user: user.username });
-                else res({ choice: getEmoji(r), options: options, player1: player1, bot: bot });
+                else res({ choice: getEmoji(r), options, player1, bot });
             });
         } catch (e) {
             console.log(e)
