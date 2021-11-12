@@ -29,7 +29,7 @@ class TicTacToe {
         this.timeEndTitle = options.timeEndTitle || "{user} is tooo slow"
         this.timeEndDescription = options.timeEndDescription || "{user} was too scared to choose their move."
         this.endTitle = options.endTitle || "The game ended with victory for {winner}";
-        this.endDescription = options.endDescription || "The Winner is {winner} 👑\nThe Nerd / Loooser is {looser} 🤢";
+        this.endDescription = options.endDescription || "The Winner is {winner} 👑\nThe Nerd / loser is {loser} 🤢";
         this.drawEndTitle = options.drawEndTitle || "The game ended with a draw";
         this.drawEndDescription = options.drawEndDescription || "Nobody won RIP!!!\n\nPlayer 1 : {player1}\n\nPlayer 2 : {player2}";
     }
@@ -53,12 +53,12 @@ class TicTacToe {
 
             if (data.reason === "time") {
                 let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.timeEndTitle.replace(/{user}/g, message.author.username), description: this.timeEndDescription.replace(/{user}/g, message.author.username) }] });
+                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.timeEndTitle.replace(/\{user\}/, message.author.username), description: this.timeEndDescription.replace(/\{user\}/, message.author.username) }] });
                 ended = true;
                 break;
             } else if (data.reason === "cancel") {
                 let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.forceEndTitle.replace(/{user}/g, message.author.username), description: this.forceEndDescription.replace(/{user}/g, message.author.username) }] });
+                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.forceEndTitle.replace(/\{user\}/, message.author.username), description: this.forceEndDescription.replace(/\{user\}/, message.author.username) }] });
                 ended = true;
                 break;
             }
@@ -67,21 +67,21 @@ class TicTacToe {
             user = data.player1;
             botc = data.bot;
 
-            let rowss = await getComponents(options);
+            const rowss = await getComponents(options);
             sent.edit({ components: rowss, embeds: [{ color: "DARK_VIVID_PINK", title: this.startTitle, description: getDescription(user, botc) }] })
 
             let win = getWinner(user, botc);
             let winner = win === 1 ? message.author.username : botName;
-            let looser = win === 2 ? message.author.username : botName;
+            let loser = win === 2 ? message.author.username : botName;
 
             if (win === 0) {
-                let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/{player1}/g, message.author.username).replace(/{player2}/g, botName), description: this.drawEndDescription.replace(/{player1}/g, message.author.username).replace(/{player2}/g, botName) }] });
+                const r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
+                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName), description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName) }] });
                 ended = true;
                 break;
             } else if (win >= 0 && win <= 2) {
-                let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/{winner}/g, winner).replace(/{looser}/g, looser), description: this.endDescription.replace(/{winner}/g, winner).replace(/{looser}/g, looser) }] });
+                const r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
+                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser), description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser) }] });
                 ended = true;
                 break;
             }
@@ -90,15 +90,15 @@ class TicTacToe {
         if (ended) return;
         let win = getWinner(user, botc);
         let winner = win === 1 ? message.author.username : botName;
-        let looser = win === 2 ? message.author.username : botName;
-
+        let loser = win === 2 ? message.author.username : botName;
+        
         if (win === 0) {
             let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/{player1}/g, message.author.username).replace(/{player2}/g, botName), description: this.drawEndDescription.replace(/{player1}/g, message.author.username).replace(/{player2}/g, botName) }] });
+            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName), description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName) }] });
             ended = true;
         } else if (win >= 0 && win <= 2) {
             let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/{winner}/g, winner).replace(/{looser}/g, looser), description: this.endDescription.replace(/{winner}/g, winner).replace(/{looser}/g, looser) }] });
+            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser), description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser) }] });
             ended = true;
         }
 
@@ -124,12 +124,12 @@ class TicTacToe {
 
             if (data.reason === "time") {
                 let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.timeEndTitle.replace(/{user}/g, data.user), description: this.timeEndDescription.replace(/{user}/g, data.user) }] });
+                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.timeEndTitle.replace(/\{user\}/, data.user), description: this.timeEndDescription.replace(/\{user\}/, data.user) }] });
                 ended = true;
                 break;
             } else if (data.reason === "cancel") {
                 let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.forceEndTitle.replace(/{user}/g, data.user), description: this.forceEndDescription.replace(/{user}/g, data.user) }] });
+                sent.edit({ components: [r], embeds: [{ color: "DARK_RED", title: this.forceEndTitle.replace(/\{user\}/, data.user), description: this.forceEndDescription.replace(/\{user\}/, data.user) }] });
                 ended = true;
                 break;
             }
@@ -142,16 +142,16 @@ class TicTacToe {
 
             let win = getWinner(player1Choice, player2Choice);
             let winner = win === 1 ? message.author.username : player2.username;
-            let looser = win === 2 ? message.author.username : player2.username;
+            let loser = win === 2 ? message.author.username : player2.username;
 
             if (win === 0) {
                 let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/{player1}/g, message.author.username).replace(/{player2}/g, player2.username), description: this.drawEndDescription.replace(/{player1}/g, message.author.username).replace(/{player2}/g, player2.username) }] });
+                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username), description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username) }] });
                 ended = true;
                 break;
             } else if (win >= 0 && win <= 2) {
                 let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/{winner}/g, winner).replace(/{looser}/g, looser), description: this.endDescription.replace(/{winner}/g, winner).replace(/{looser}/g, looser) }] });
+                sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser), description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser) }] });
                 ended = true;
                 break;
             }
@@ -159,15 +159,15 @@ class TicTacToe {
         if (ended) return;
         let win = getWinner(user, botc);
         let winner = win === 1 ? message.author.username : player2.username;
-        let looser = win === 2 ? message.author.username : player2.username;
+        let loser = win === 2 ? message.author.username : player2.username;
 
         if (win === 0) {
             let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/{player1}/g, message.author.username).replace(/{player2}/g, player2.username), description: this.drawEndDescription.replace(/{player1}/g, message.author.username).replace(/{player2}/g, player2.username) }] });
+            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username), description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username) }] });
             ended = true;
         } else if (win >= 0 && win <= 2) {
             let r = new Discord.MessageActionRow().addComponents(new Discord.MessageButton().setCustomId("no_need_of_id_here").setDisabled(true).setStyle("SECONDARY").setLabel("Game Ended").setEmoji("🕊"));
-            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/{winner}/g, winner).replace(/{looser}/g, looser), description: this.endDescription.replace(/{winner}/g, winner).replace(/{looser}/g, looser) }] });
+            sent.edit({ components: [r], embeds: [{ color: "DARK_BUT_NOT_BLACK", title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser), description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser) }] });
             ended = true;
         }
     }
