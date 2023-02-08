@@ -13,8 +13,10 @@ const getEmoji = require('./getEmoji');
 function getChoice(user, channel, options, player1, bot) {
     return new Promise(async (res, rej) => {
         try {
-            let _msg_ = await channel.send({ content: `${user.toString()}, Choose your next move from the buttons` });
-            setTimeout(() => _msg_.delete().catch(() => { }), this.autoDelete);
+            if (this.chooseMoveMessage) {
+                let _msg_ = await channel.send({ content: `${user.toString()}, Choose your next move from the buttons` });
+                setTimeout(() => _msg_.delete().catch(() => { }), this.autoDelete);
+            }
 
             const collector = channel.createMessageComponentCollector({ filter: (i) => i.user.id === user.id && (i.customId.endsWith("_tic_tac_toe")), time: 30000 });
 

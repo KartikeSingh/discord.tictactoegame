@@ -19,6 +19,7 @@ class TicTacToe {
      * @param {String} options.endDescription The description when game ended normally.
      * @param {0 | 1 | 2} options.replyType How to reply? 0 => .reply, 1 => editReply, 2 => followUp
      * @param {Boolean} options.ephemeral If the created reply should be ephemeral.
+     * @param {Boolean} options.chooseMoveMessage Whether bot should ask the player to choose move
     */
     constructor(options = {}) {
         if ("autoDelete" in options && typeof (options.autoDelete) !== "number" || options.autoDelete < 500) throw new Error("Auto delete should be an number and at least 500.")
@@ -34,8 +35,9 @@ class TicTacToe {
         this.endDescription = options.endDescription || "The Winner is {winner} 👑\nThe Nerd / loser is {loser} 🤢";
         this.drawEndTitle = options.drawEndTitle || "The game ended with a draw";
         this.drawEndDescription = options.drawEndDescription || "Nobody won RIP!!!\n\nPlayer 1 : {player1}\n\nPlayer 2 : {player2}";
-        this.ephemeral = options.ephemeral || false;
+        this.ephemeral = typeof options.ephemeral === 'boolean' ? options.ephemeral : false;
         this.replyType = [0, 1, 2].includes(options.replyType) ? options.replyType : 0;
+        this.chooseMoveMessage = typeof options.chooseMoveMessage === 'boolean' ? options.chooseMoveMessage : true;
     }
 
     /**

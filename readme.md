@@ -47,19 +47,23 @@ const tttInstance = new ttt({
 });
 
 /**
-  * TThe parameters of options
-  * @param {Number} autoDelete Time after which auto delete useless bot messages.
-  * @param {String} startTitle The game starting title.
-  * @param {String} requestTitle The title for request message in user DM.
-  * @param {String} forceEndTitle The title when game is ended forcefully
-  * @param {String} forceEndDescription The description when game is ended forcefully
-  * @param {String} timeEndTitle The title when user failed in choosing their move.
-  * @param {String} timeEndDescription The description when user failed in choosing their move.
-  * @param {String} drawEndTitle The title when game ended with a draw.
-  * @param {String} drawEndDescription The description when game ended with a draw.
-  * @param {String} endTitle The title when game ended normally.
-  * @param {String} endDescription The description when game ended normally.
-*/
+  * The Tic Tac Toe object
+  * @param {Object} options The options for the game
+  * @param {Number} options.autoDelete Time after which auto delete useless bot messages.
+  * @param {String} options.startTitle The game starting title.
+  * @param {String} options.requestTitle The title for request message in user DM.
+  * @param {String} options.forceEndTitle The title when game is ended forcefully
+  * @param {String} options.forceEndDescription The description when game is ended forcefully
+  * @param {String} options.timeEndTitle The title when user failed in choosing their move.
+  * @param {String} options.timeEndDescription The description when user failed in choosing their move.
+  * @param {String} options.drawEndTitle The title when game ended with a draw.
+  * @param {String} options.drawEndDescription The description when game ended with a draw.
+  * @param {String} options.endTitle The title when game ended normally.
+  * @param {String} options.endDescription The description when game ended normally.
+  * @param {0 | 1 | 2} options.replyType How to reply? 0 => .reply, 1 => editReply, 2 => followUp
+  * @param {Boolean} options.ephemeral If the created reply should be ephemeral.
+  * @param {Boolean} options.chooseMoveMessage Whether bot should ask the player to choose move
+  */
 ```
 # Note
 - For discord JS 13, use version `1.1.3`
