@@ -1,3 +1,4 @@
+const { ALLOWED_EXTENSIONS } = require('discord.js');
 const Discord = require('discord.js');
 const { getChoice, getComponents, getDescription, getWinner, getApproval } = require('./utility');
 
@@ -22,7 +23,7 @@ class TicTacToe {
      * @param {Boolean} options.chooseMoveMessage Whether bot should ask the player to choose move
     */
     constructor(options = {}) {
-        if ("autoDelete" in options && typeof (options.autoDelete) !== "number" || options.autoDelete < 500) throw new Error("Auto delete should be an number and at least 500.")
+        if ("autoDelete" in options && typeof (options.autoDelete) !== "number" || options.autoDelete < 500) return reject("Auto delete should be an number and at least 500.")
 
         this.autoDelete = options.autoDelete || 3000;
         this.startTitle = options.startTitle || "Tic Tac Toe Game"
@@ -45,73 +46,121 @@ class TicTacToe {
      * @param {Discord.Message | Discord.Interaction} message The message in which command was used
      * @param {Discord.Client} bot The discord client
      */
-    async solo(message, bot) {
-        const botName = bot?.user?.username || "Bot";
+    async solo(_message, bot) {
+        return new Promise(async (response, reject) => {
+            const botName = bot?.user?.username || "Bot";
 
-        if (!message || !message.author) throw new Error("No message was provided")
+            _message.author = _message.author || _message.user;
 
-        let options = [1, 2, 3, 4, 5, 6, 7, 8, 9],
-            user = [],
-            botc = [],
-            ended = false;
+            if (!_message || !_message.author) return reject("No message was provided");
 
-        const row = await getComponents(options);
+            let options = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                user = [],
+                botc = [],
+                ended = false;
 
-        await message[this.replyType === 0 ? "reply" : this.replyType === 1 ? "editReply" : "followUp"]({
-            components: row,
-            embeds: [
-                new Discord.EmbedBuilder({
-                    title: this.startTitle,
-                    description: getDescription(user, botc)
-                }).setColor("DarkVividPink")
-            ],
-            ephemeral: this.ephemeral
-        })
+            const row = await getComponents(options);
 
-        while (options.length !== 0) {
-            let data = await getChoice.bind(this)(message.author, message.channel, options, user, botc);
-
-            if (data.reason === "time") {
-                const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-
-                message[message.editReply ? "editReply" : "edit"]({
-                    components: [r],
-                    embeds: [new Discord.EmbedBuilder({
-                        title: this.timeEndTitle.replace(/\{user\}/, message.author.username),
-                        description: this.timeEndDescription.replace(/\{user\}/, message.author.username)
-                    }).setColor("DarkRed")]
-                });
-
-                ended = true;
-                break;
-            } else if (data.reason === "cancel") {
-                const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-                message[message.editReply ? "editReply" : "edit"]({
-                    components: [r],
-                    embeds: [new Discord.EmbedBuilder({
-                        title: this.forceEndTitle.replace(/\{user\}/, message.author.username),
-                        description: this.forceEndDescription.replace(/\{user\}/, message.author.username)
-                    }).setColor("DarkRed")]
-                });
-
-                ended = true;
-                break;
-            }
-
-            options = data.options;
-            user = data.player1;
-            botc = data.bot;
-
-            const rowss = await getComponents(options);
-            message[message.editReply ? "editReply" : "edit"]({
-                components: rowss,
-                embeds: [new Discord.EmbedBuilder({
-                    title: this.startTitle,
-                    description: getDescription(user, botc)
-                }).setColor("DarkVividPink")]
+            const message = await _message[this.replyType === 0 ? "reply" : this.replyType === 1 ? "editReply" : "followUp"]({
+                components: row,
+                embeds: [
+                    new Discord.EmbedBuilder({
+                        title: this.startTitle,
+                        description: getDescription(user, botc)
+                    }).setColor("DarkVividPink")
+                ],
+                ephemeral: this.ephemeral,
+                fetchReply: true
             })
 
+            while (options.length !== 0) {
+                let data = await getChoice.bind(this)(message.author, message.channel, options, user, botc);
 
+                if (data.reason === "time") {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.timeEndTitle.replace(/\{user\}/, message.author.username),
+                            description: this.timeEndDescription.replace(/\{user\}/, message.author.username)
+                        }).setColor("DarkRed")]
+                    });
+
+                    ended = true;
+                    break;
+                } else if (data.reason === "cancel") {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.forceEndTitle.replace(/\{user\}/, message.author.username),
+                            description: this.forceEndDescription.replace(/\{user\}/, message.author.username)
+                        }).setColor("DarkRed")]
+                    });
+
+                    ended = true;
+                    break;
+                }
+
+                options = data.options;
+                user = data.player1;
+                botc = data.bot;
+
+                const rowss = await getComponents(options);
+                message[message.editReply ? "editReply" : "edit"]({
+                    components: rowss,
+                    embeds: [new Discord.EmbedBuilder({
+                        title: this.startTitle,
+                        description: getDescription(user, botc)
+                    }).setColor("DarkVividPink")]
+                })
+
+
+                let win = getWinner(user, botc);
+                let winner = win === 1 ? message.author.username : botName;
+                let loser = win === 2 ? message.author.username : botName;
+
+                if (win === 0) {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName),
+                            description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName)
+                        }).setColor("DarkButNotBlack")]
+                    });
+
+                    ended = true;
+
+                    response({
+                        message,
+                        win: 0
+                    });
+
+                    break;
+                } else {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser),
+                            description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser)
+                        }).setColor("DarkButNotBlack")]
+                    });
+
+                    ended = true;
+
+                    response({
+                        message,
+                        win: win === 1 ? 1 : -1
+                    });
+
+                    break;
+                }
+            }
+
+            if (ended) return;
             let win = getWinner(user, botc);
             let winner = win === 1 ? message.author.username : botName;
             let loser = win === 2 ? message.author.username : botName;
@@ -127,8 +176,12 @@ class TicTacToe {
                 });
 
                 ended = true;
-                break;
-            } else if (win >= 0 && win <= 2) {
+
+                response({
+                    message,
+                    win: 0
+                });
+            } else {
                 const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
                 message[message.editReply ? "editReply" : "edit"]({
                     components: [r],
@@ -139,39 +192,13 @@ class TicTacToe {
                 });
 
                 ended = true;
-                break;
+
+                response({
+                    message,
+                    win: win === 1 ? 1 : -1
+                });
             }
-        }
-
-        if (ended) return;
-        let win = getWinner(user, botc);
-        let winner = win === 1 ? message.author.username : botName;
-        let loser = win === 2 ? message.author.username : botName;
-
-        if (win === 0) {
-            const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-            message[message.editReply ? "editReply" : "edit"]({
-                components: [r],
-                embeds: [new Discord.EmbedBuilder({
-                    title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName),
-                    description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, botName)
-                }).setColor("DarkButNotBlack")]
-            });
-
-            ended = true;
-        } else if (win >= 0 && win <= 2) {
-            const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-            message[message.editReply ? "editReply" : "edit"]({
-                components: [r],
-                embeds: [new Discord.EmbedBuilder({
-                    title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser),
-                    description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser)
-                }).setColor("DarkButNotBlack")]
-            });
-
-            ended = true;
-        }
-
+        });
     }
 
     /**
@@ -180,71 +207,115 @@ class TicTacToe {
      * @param {Discord.User} player2 
      * @returns 
      */
-    async duo(message, player2) {
-        if (!message || !message.author) throw new Error("No message was provided");
-        if (!player2 || !player2.username) throw new Error("No Player 2 was provided");
+    async duo(_message, player2) {
+        return new Promise(async (response, reject) => {
+            _message.author = _message.author || _message.user;
 
-        if (message.author.id === player2.id) throw new Error("Player 1 And Player 2 can't be same");
-        if (player2.bot) throw new Error("Player 2 shouldn't be a bot");
+            if (!_message || !_message.author) return reject("No _message was provided");
+            if (!player2 || !player2.username) return reject("No Player 2 was provided");
 
-        if (await getApproval.bind(this)(player2, message) === false) return;
+            if (_message.author.id === player2.id) return reject("Player 1 And Player 2 can't be same");
+            if (player2.bot) return reject("Player 2 shouldn't be a bot");
 
-        let options = [1, 2, 3, 4, 5, 6, 7, 8, 9], player1Choice = [], player2Choice = [];
-        const row = await getComponents(options);
-        let ended = false;
+            if (await getApproval.bind(this)(player2, _message) === false) return;
 
-        const sent = await message.channel.send({
-            components: row,
-            embeds: [new Discord.EmbedBuilder({
-                title: this.startTitle,
-                description: getDescription(player1Choice, player2Choice)
-            }).setColor("DarkVividPink")]
-        })
+            let options = [1, 2, 3, 4, 5, 6, 7, 8, 9], player1Choice = [], player2Choice = [];
+            const row = await getComponents(options);
+            let ended = false;
 
-
-        for (let i = 1; options.length !== 0; i++) {
-            let data = await getChoice.bind(this)(i % 2 !== 0 ? message.author : player2, message.channel, options, i % 2 !== 0 ? player1Choice : player2Choice);
-
-            if (data.reason === "time") {
-                const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-                message[message.editReply ? "editReply" : "edit"]({
-                    components: [r],
-                    embeds: [new Discord.EmbedBuilder({
-                        title: this.timeEndTitle.replace(/\{user\}/, data.user),
-                        description: this.timeEndDescription.replace(/\{user\}/, data.user)
-                    }).setColor("DarkRed")]
-                });
-
-                ended = true;
-                break;
-            } else if (data.reason === "cancel") {
-                const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-                message[message.editReply ? "editReply" : "edit"]({
-                    components: [r],
-                    embeds: [new Discord.EmbedBuilder({
-                        title: this.forceEndTitle.replace(/\{user\}/, data.user),
-                        description: this.forceEndDescription.replace(/\{user\}/, data.user)
-                    }).setColor("DarkRed")]
-                });
-
-                ended = true;
-                break;
-            }
-
-            options = data.options;
-            i % 2 !== 0 ? player1Choice = data.player1 : player2Choice = data.player1;
-
-            let rowss = await getComponents(options);
-            message[message.editReply ? "editReply" : "edit"]({
-                components: rowss,
+            const message = await _message[this.replyType === 0 ? "reply" : this.replyType === 1 ? "editReply" : "followUp"]({
+                components: row,
                 embeds: [new Discord.EmbedBuilder({
                     title: this.startTitle,
                     description: getDescription(player1Choice, player2Choice)
                 }).setColor("DarkVividPink")]
             })
 
+            for (let i = 1; options.length !== 0; i++) {
+                let data = await getChoice.bind(this)(i % 2 !== 0 ? message.author : player2, message.channel, options, i % 2 !== 0 ? player1Choice : player2Choice);
 
-            let win = getWinner(player1Choice, player2Choice);
+                if (data.reason === "time") {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.timeEndTitle.replace(/\{user\}/, data.user),
+                            description: this.timeEndDescription.replace(/\{user\}/, data.user)
+                        }).setColor("DarkRed")]
+                    });
+
+                    ended = true;
+                    break;
+                } else if (data.reason === "cancel") {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.forceEndTitle.replace(/\{user\}/, data.user),
+                            description: this.forceEndDescription.replace(/\{user\}/, data.user)
+                        }).setColor("DarkRed")]
+                    });
+
+                    ended = true;
+                    break;
+                }
+
+                options = data.options;
+                i % 2 !== 0 ? player1Choice = data.player1 : player2Choice = data.player1;
+
+                let rowss = await getComponents(options);
+                message[message.editReply ? "editReply" : "edit"]({
+                    components: rowss,
+                    embeds: [new Discord.EmbedBuilder({
+                        title: this.startTitle,
+                        description: getDescription(player1Choice, player2Choice)
+                    }).setColor("DarkVividPink")]
+                })
+
+
+                let win = getWinner(player1Choice, player2Choice);
+                let winner = win === 1 ? message.author.username : player2.username;
+                let loser = win === 2 ? message.author.username : player2.username;
+
+                if (win === 0) {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username),
+                            description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username)
+                        }).setColor("DarkButNotBlack")]
+                    });
+
+                    ended = true;
+
+                    response({
+                        message,
+                        win: 0
+                    })
+                    break;
+                } else {
+                    const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
+                    message[message.editReply ? "editReply" : "edit"]({
+                        components: [r],
+                        embeds: [new Discord.EmbedBuilder({
+                            title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser),
+                            description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser)
+                        }).setColor("DarkButNotBlack")]
+                    });
+
+                    ended = true;
+
+                    response({
+                        message,
+                        win: win === 1 ? 1 : -1
+                    })
+
+                    break;
+                }
+            }
+            if (ended) return;
+            let win = getWinner(user, botc);
             let winner = win === 1 ? message.author.username : player2.username;
             let loser = win === 2 ? message.author.username : player2.username;
 
@@ -259,8 +330,12 @@ class TicTacToe {
                 });
 
                 ended = true;
-                break;
-            } else if (win >= 0 && win <= 2) {
+
+                response({
+                    message,
+                    win: 0
+                })
+            } else {
                 const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
                 message[message.editReply ? "editReply" : "edit"]({
                     components: [r],
@@ -271,37 +346,15 @@ class TicTacToe {
                 });
 
                 ended = true;
-                break;
+
+                response({
+                    message,
+                    win: win === 1 ? 1 : -1
+                })
             }
-        }
-        if (ended) return;
-        let win = getWinner(user, botc);
-        let winner = win === 1 ? message.author.username : player2.username;
-        let loser = win === 2 ? message.author.username : player2.username;
 
-        if (win === 0) {
-            const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-            message[message.editReply ? "editReply" : "edit"]({
-                components: [r],
-                embeds: [new Discord.EmbedBuilder({
-                    title: this.drawEndTitle.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username),
-                    description: this.drawEndDescription.replace(/\{player1\}/, message.author.username).replace(/\{player2\}/, player2.username)
-                }).setColor("DarkButNotBlack")]
-            });
+        });
 
-            ended = true;
-        } else if (win >= 0 && win <= 2) {
-            const r = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("no_need_of_id_here").setDisabled(true).setStyle(Discord.ButtonStyle.Secondary).setLabel("Game Ended").setEmoji("🕊"));
-            message[message.editReply ? "editReply" : "edit"]({
-                components: [r],
-                embeds: [new Discord.EmbedBuilder({
-                    title: this.endTitle.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser),
-                    description: this.endDescription.replace(/\{winner\}/, winner).replace(/\{loser\}/, loser)
-                }).setColor("DarkButNotBlack")]
-            });
-
-            ended = true;
-        }
     }
 }
 

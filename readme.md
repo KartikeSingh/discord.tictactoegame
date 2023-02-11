@@ -65,9 +65,34 @@ const tttInstance = new ttt({
   * @param {Boolean} options.chooseMoveMessage Whether bot should ask the player to choose move
   */
 ```
+
+# Game Result
+```js
+const response = await tttInstance.solo(params); // or duo
+
+/**
+ * @property {Number} win 0 => draw, 1 => first user won, -1 => second user won
+ */
+response.win
+
+/**
+ * @property {Message} message the discordmessage object
+ */
+response.message
+```
+
 # Note
 - For discord JS 13, use version `1.1.3`
 - For discord JS 14, use version `>=1.1.4`
 
 # Support
 If you need any help or something you can get support on my [discord server](https://discord.gg/XYnMTQNTFh)
+
+
+Legendary - 5% 
+Rare - 15%
+common - 80%
+
+
+Spawn - 15%
+No Spawn - 85%
