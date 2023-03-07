@@ -1,8 +1,14 @@
-const { User, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require("discord.js");
+const Discord = require("discord.js");
+
+const _embedBuilder = Discord.EmbedBuilder || Discord.MessageEmbed;
+const _actionRow = Discord.ButtonBuilder ? 1 : "ACTION_ROW";
+const _button = Discord.ButtonBuilder ? 2 : "BUTTON";
+const secondary = Discord.ButtonBuilder ? 2 : "SECONDARY";
+const danger = Discord.ButtonBuilder ? 4 : "DANGER";
 
 /**
  * 
- * @param {User} player 
+ * @param {Discord.User} player 
  * @returns 
  */
 async function getApproval(player, message) {
@@ -10,23 +16,25 @@ async function getApproval(player, message) {
         try {
             const channel = await player.createDM();
             const msg = await channel.send({
-                components: [
-                    new ActionRowBuilder()
-                        .addComponents([
-                            new ButtonBuilder()
-                                .setCustomId("1_tic_tac_toe_choose")
-                                .setStyle(ButtonStyle.Success)
-                                .setEmoji("✔")
-                                .setLabel("Accept"),
-                            new ButtonBuilder()
-                                .setCustomId("2_tic_tac_toe_choose")
-                                .setStyle(ButtonStyle.Danger)
-                                .setEmoji("❌")
-                                .setLabel("Reject")
-                        ])
-                ],
+                components: [{
+                    type: _actionRow,
+                    components: [{
+                        type: _button,
+                        label: "Accept",
+                        customId: "1_tic_tac_toe_choose",
+                        style: secondary,
+                        emoji: "✔",
+                    },
+                    {
+                        type: _button,
+                        label: "Reject",
+                        customId: "2_tic_tac_toe_choose",
+                        style: danger,
+                        emoji: "❌",
+                    }]
+                }],
                 embeds: [
-                    new EmbedBuilder({
+                    new _embedBuilder({
                         title: this.requestTitle,
                         fields: [{
                             name: "Sender",
@@ -42,7 +50,7 @@ async function getApproval(player, message) {
                             value: message.channel.toString(),
                             inline: true
                         }]
-                    }).setColor("DarkNavy")
+                    }).setColor("#00008B").toJSON()
                 ]
             });
 
@@ -57,31 +65,31 @@ async function getApproval(player, message) {
                 if (r === "time") {
                     message.channel.send({
                         embeds: [
-                            new EmbedBuilder({
+                            new _embedBuilder({
                                 title: `${player.username} was too lazy to reply,\nso game is ended`
-                            }).setColor("Red")
+                            }).setColor("#ff0000").toJSON()
                         ]
                     });
                     msg.reply({
                         embeds: [
-                            new EmbedBuilder({
+                            new _embedBuilder({
                                 title: "You took too long to respond"
-                            }).setColor("Red")
+                            }).setColor("#ff0000").toJSON()
                         ]
                     });
                 } else if (r === "2") {
                     message.channel.send({
                         embeds: [
-                            new EmbedBuilder({
+                            new _embedBuilder({
                                 title: `${player.username} declined to join the game`
-                            }).setColor("Red")
+                            }).setColor("#ff0000").toJSON()
                         ]
                     });
                     f.first().reply({
                         embeds: [
-                            new EmbedBuilder({
+                            new _embedBuilder({
                                 title: "Successfully denied game invitation"
-                            }).setColor("Green")
+                            }).setColor("#00e82b").toJSON()
                         ]
                     });
                     msg.delete()
@@ -89,18 +97,17 @@ async function getApproval(player, message) {
                     msg.delete()
                     message.channel.send({
                         embeds: [
-                            new EmbedBuilder({
+                            new _embedBuilder({
                                 title: `${player.username} Accepted the game invitation`
-                            }).setColor("Green")
+                            }).setColor("#00e82b").toJSON()
                         ]
                     });
 
                     f.first().reply({
                         embeds: [
-                            new EmbedBuilder({
-                                color: "GREEN",
+                            new _embedBuilder({
                                 title: "Successfully accepted game invitation"
-                            }).setColor("Red")
+                            }).setColor("#ff0000").toJSON()
                         ]
                     });
                 }
@@ -109,7 +116,7 @@ async function getApproval(player, message) {
             })
         } catch (e) {
             console.log(e);
-            
+
             rej(false);
         }
     })

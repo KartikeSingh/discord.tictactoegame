@@ -82,8 +82,7 @@ response.message
 ```
 
 # Note
-- For discord JS 13, use version `1.1.3`
-- For discord JS 14, use version `>=1.1.4`
+- This version works for both Discord JS 13 & 14
 
 # Support
 If you need any help or something you can get support on my [discord server](https://discord.gg/XYnMTQNTFh)
