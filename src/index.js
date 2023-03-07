@@ -54,7 +54,7 @@ class TicTacToe {
     async solo(_message, bot) {
         return new Promise(async (response, reject) => {
             const botName = bot?.user?.username || "Bot";
-console.log( _message.user ,_message.author)
+
             _message.author = _message.user || _message.author;
 
             if (!_message || !_message.author) return reject("No message was provided");
