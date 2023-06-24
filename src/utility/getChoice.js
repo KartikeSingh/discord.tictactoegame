@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
+const getEmergencyMove = require('./getEmergencyMove');
 const getEmoji = require('./getEmoji');
+const getNumber = require('./getNumber');
 
 /**
  * 
@@ -27,8 +29,9 @@ function getChoice(user, channel, options, player1, bot) {
 
                 options = options.filter(v => v !== userChoice);
                 player1.push(userChoice);
+
                 if (bot && options.length > 0) {
-                    let c = options[Math.floor(Math.random() * options.length)];
+                    let c = getEmergencyMove(bot, player1) || options[Math.floor(Math.random() * options.length)];
                     bot.push(c);
                     options = options.filter(v => v !== c);
                 }
@@ -48,7 +51,7 @@ function getChoice(user, channel, options, player1, bot) {
             collector.once('end', async (f, r) => {
                 if (r === "time") res({ reason: "time", user: user.username });
                 else if (r === "cancel") res({ reason: "cancel", user: user.username });
-                else res({ choice: getEmoji(r), options, player1, bot });
+                else res({ choice: getEmoji(r), options, player1: player1.map(v => typeof v === "number" ? v : getNumber(v)), bot: bot.map(v => typeof v === "number" ? v : getNumber(v)) });
             });
         } catch (e) {
             console.log(e)

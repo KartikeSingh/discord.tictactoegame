@@ -1,7 +1,7 @@
 {
   "name": "discord.tictactoegame",
-  "version": "1.1.6",
-  "description": "An package to easily make tic tac toe game for discord bot",
+  "version": "1.1.8",
+  "description": "A package to easily make tic tac toe game for discord bot",
   "main": "src/index.js",
   "scripts": {
     "test": "node src/test"

@@ -7,11 +7,22 @@ const getNumber = require('./getNumber');
  * @returns 
  */
 function getWinner(player1, player2) {
-    player1.forEach((v, i) => player1[i] = getNumber(v))
-    player2.forEach((v, i) => player2[i] = getNumber(v))
+    player1 = player1.map(v => typeof v === "number" ? v : getNumber(v));
+    player2 = player2.map(v => typeof v === "number" ? v : getNumber(v));
 
-    if ((player1.includes(7) && player1.includes(5) && player1.includes(3)) || (player1.includes(1) && player1.includes(5) && player1.includes(9)) || (player1.includes(1) && player1.includes(2) && player1.includes(3)) || (player1.includes(4) && player1.includes(5) && player1.includes(6)) || (player1.includes(7) && player1.includes(8) && player1.includes(9)) || (player1.includes(1) && player1.includes(4) && player1.includes(7)) || (player1.includes(5) && player1.includes(2) && player1.includes(8)) || (player1.includes(9) && player1.includes(2) && player1.includes(6)) || (player1.includes(7) && player1.includes(5) && player1.includes(3))) return 1;
-    else if ((player2.includes(1) && player2.includes(5) && player2.includes(9)) || (player2.includes(7) && player2.includes(5) && player2.includes(3)) || (player2.includes(1) && player2.includes(2) && player2.includes(3)) || (player2.includes(4) && player2.includes(5) && player2.includes(6)) || (player2.includes(7) && player2.includes(8) && player2.includes(9)) || (player2.includes(1) && player2.includes(4) && player2.includes(7)) || (player2.includes(5) && player2.includes(2) && player2.includes(8)) || (player2.includes(9) && player2.includes(2) && player2.includes(6)) || (player2.includes(7) && player2.includes(5) && player2.includes(3))) return 2;
+    const positions = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+        [1, 4, 7],
+        [2, 5, 8],
+        [3, 6, 9],
+        [1, 5, 9],
+        [3, 5, 7]
+    ]
+
+    if (positions.some(v => v.every(x => player1.includes(x)))) return 1;
+    else if (positions.some(v => v.every(x => player2.includes(x)))) return 2;
     else if (player1.length + player2.length === 9) return 0;
     else return -1;
 }

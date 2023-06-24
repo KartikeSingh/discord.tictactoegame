@@ -134,6 +134,7 @@ class TicTacToe {
                 botc = data.bot;
 
                 const rowss = await getComponents(options);
+               
                 message[message.editReply ? "editReply" : "edit"]({
                     components: rowss,
                     embeds: [new _embedBuilder({
